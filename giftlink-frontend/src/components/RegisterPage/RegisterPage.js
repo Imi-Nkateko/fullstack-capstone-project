@@ -1,17 +1,63 @@
 import React, { useState } from 'react';
+// Task 1: Import urlConfig from `giftlink-frontend/src/config.js`
+import { urlConfig } from '../../config';
+// Task 2: Import useAppContext `giftlink-frontend/context/AuthContext.js`
+import { useAppContext } from '../../context/AuthContext';
+// Task 3: Import useNavigate from `react-router-dom`
+import { useNavigate } from 'react-router-dom';
 import './RegisterPage.css';
 
 function RegisterPage() {
-    // Task 4: Store all of these attributes as states
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    
+    // Task 4: Include a state for error message.
+    const [showerr, setShowerr] = useState('');
 
-    // Task 5: Define a method handleRegister to print a message to the console
+    // Task 5: Create a local variable for `navigate` and `setIsLoggedIn`.
+    const navigate = useNavigate();
+    const { setIsLoggedIn } = useAppContext();
+
     const handleRegister = async () => {
-        console.log("Register invoked");
-        console.log(`Submitting registration for: ${firstName} ${lastName} (${email})`);
+        try {
+            // Call the registration API
+            const response = await fetch(`${urlConfig.backendUrl}/api/auth/register`, {
+                // Task 6: Set method
+                method: 'POST',
+                // Task 7: Set headers
+                headers: {
+                    'content-type': 'application/json',
+                },
+                // Task 8: Set body to send user details
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Store tokens safely on client side
+                sessionStorage.setItem('auth-token', data.authtoken);
+                sessionStorage.setItem('email', data.email);
+                
+                // Update global state and redirect
+                setIsLoggedIn(true);
+                navigate('/app');
+            } else {
+                // Handle server response validation errors
+                setShowerr(data.error || 'Registration failed. Please try again.');
+            }
+
+        } catch (e) {
+            console.log("Error fetching details: " + e.message);
+            setShowerr('Network connection error. Please try again later.');
+        }
     };
 
     return (
@@ -21,7 +67,13 @@ function RegisterPage() {
                     <div className="register-card p-4 border rounded shadow-sm">
                         <h2 className="text-center mb-4 font-weight-bold">Register</h2>
 
-                        {/* Task 6: Input elements for registration */}
+                        {/* Conditional error message display */}
+                        {showerr && (
+                            <div className="alert alert-danger" role="alert">
+                                {showerr}
+                            </div>
+                        )}
+
                         <div className="mb-3">
                             <label htmlFor="firstName" className="form-label font-weight-bold">First Name</label>
                             <input
@@ -70,7 +122,6 @@ function RegisterPage() {
                             />
                         </div>
 
-                        {/* Task 7: Register button which invokes handleRegister */}
                         <button className="btn btn-primary w-100 mb-3 font-weight-bold" onClick={handleRegister}>
                             Register
                         </button>
@@ -82,7 +133,7 @@ function RegisterPage() {
                 </div>
             </div>
         </div>
-    ); // end of return
+    );
 }
 
 export default RegisterPage;
