@@ -1,9 +1,10 @@
 import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import MainPage from './components/MainPage/MainPage';
-// Task 1: Import RegisterPage and LoginPage components
 import LoginPage from './components/LoginPage/LoginPage';
 import RegisterPage from './components/RegisterPage/RegisterPage';
+// Task 8: Add the component import statement
+import DetailsPage from './components/DetailsPage/DetailsPage';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -16,13 +17,13 @@ function App() {
     <>
         <Navbar/>
         <Routes>
-          {/* the final code will not pass the products to every page, but each page will call the server API */}
           <Route path="/" element={<MainPage />} />
           <Route path="/app" element={<MainPage />} />
-          
-          {/* Task 2: Create routes for both RegisterPage and LoginPage components */}
           <Route path="/app/login" element={<LoginPage />} />
           <Route path="/app/register" element={<RegisterPage />} />
+          
+          {/* Task 8: Add the path rule parameter along with other routes */}
+          <Route path="/app/product/:productId" element={<DetailsPage />} />
         </Routes>
     </>
   );
