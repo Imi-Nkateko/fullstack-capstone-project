@@ -12,6 +12,25 @@ const app = express();
 app.use("*",cors());
 const port = 3060;
 
+
+const giftRoutes = require('./routes/giftRoutes');
+const searchRoutes = require('./routes/searchRoutes');
+
+// Task 1: Import authRoutes
+const authRoutes = require('./routes/authRoutes');
+
+const app = express();
+/* ... middleware setup ... */
+
+app.use('/api/gifts', giftRoutes);
+app.use('/api/search', searchRoutes);
+
+// Task 2: Use authRoutes for the /api/auth path
+app.use('/api/auth', authRoutes);
+
+/* ... rest of app.js template ... */
+
+
 // Connect to MongoDB; we just do this one time
 connectToDatabase().then(() => {
     pinoLogger.info('Connected to DB');
