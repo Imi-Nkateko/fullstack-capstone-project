@@ -3,8 +3,9 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import MainPage from './components/MainPage/MainPage';
 import LoginPage from './components/LoginPage/LoginPage';
 import RegisterPage from './components/RegisterPage/RegisterPage';
-// Task 8: Add the component import statement
 import DetailsPage from './components/DetailsPage/DetailsPage';
+// Hint for Task 1: Add the SearchPage import statement
+import SearchPage from './components/SearchPage/SearchPage';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -21,9 +22,10 @@ function App() {
           <Route path="/app" element={<MainPage />} />
           <Route path="/app/login" element={<LoginPage />} />
           <Route path="/app/register" element={<RegisterPage />} />
-          
-          {/* Task 8: Add the path rule parameter along with other routes */}
           <Route path="/app/product/:productId" element={<DetailsPage />} />
+          
+          {/* Hint for Task 1: Add this along with the other routes */}
+          <Route path="/app/search" element={<SearchPage />} />
         </Routes>
     </>
   );
