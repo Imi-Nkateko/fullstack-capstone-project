@@ -9,18 +9,21 @@ function DetailsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-	useEffect(() => {
+    useEffect(() => {
         const authenticationToken = sessionStorage.getItem('auth-token');
         if (!authenticationToken) {
-			// Task 1: Check for authentication and redirect
-            {{insert code here}}
+            // Task 1: Check for authentication and redirect
+            navigate('/app/login');
+            return;
         }
 
         // get the gift to be rendered on the details page
         const fetchGift = async () => {
             try {
-				// Task 2: Fetch gift details
-                const response ={{insert code here}}
+                // Task 2: Fetch gift details
+                // Note: If urlConfig isn't explicitly initialized in your boilerplate, 
+                // you can fallback directly to an internal generic endpoint literal: `/api/gifts/${productId}`
+                const response = await fetch(`/api/gifts/${productId}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -35,18 +38,18 @@ function DetailsPage() {
 
         fetchGift();
 
-		// Task 3: Scroll to top on component mount
-		{{ insert code here }}
+        // Task 3: Scroll to top on component mount
+        window.scrollTo(0, 0);
 
-    }, [productId]);
+    }, [productId, navigate]);
 
 
     const handleBackClick = () => {
-		// Task 4: Handle back click
-		{{ insert code here }}
-	};
+        // Task 4: Handle back click
+        navigate(-1);
+    };
 
-	//The comments have been hardcoded for this project.
+    // The comments have been hardcoded for this project.
     const comments = [
         {
             author: "John Doe",
@@ -71,52 +74,44 @@ function DetailsPage() {
     ];
 
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
-    if (!gift) return <div>Gift not found</div>;
+    if (loading) return <div className="container mt-5">Loading...</div>;
+    if (error) return <div className="container mt-5">Error: {error}</div>;
+    if (!gift) return <div className="container mt-5">Gift not found</div>;
 
-return (
+    return (
         <div className="container mt-5">
             <button className="btn btn-secondary mb-3" onClick={handleBackClick}>Back</button>
             <div className="card product-details-card">
-                <div className="card-header text-white">
-                    <h2 className="details-title">{gift.name}</h2>
+                <div className="card-header text-white bg-primary">
+                    <h2 className="details-title mb-0">{gift.name}</h2>
                 </div>
                 <div className="card-body">
-                    <div className="image-placeholder-large">
+                    <div className="image-placeholder-large mb-4 text-center">
                         {gift.image ? (
-			// Task 5: Display gift image
-			/*insert code here*/
+                            // Task 5: Display gift image
+                            <img src={gift.image} alt={gift.name} className="product-image-large img-fluid rounded" />
                         ) : (
-                            <div className="no-image-available-large">No Image Available</div>
+                            <div className="no-image-available-large p-5 bg-light text-muted border rounded">No Image Available</div>
                         )}
                     </div>
-                    // Task 6: Display gift details
-                    	<p><strong>Category:</strong> 
-				{/* insert code here  */}
-			</p>
-                    	<p><strong>Condition:</strong> 
-				{/* insert code here  */}
-                    	</p>
-                    	<p><strong>Date Added:</strong> 
-				{/* insert code here  */}
-                        </p>
-                    	<p><strong>Age (Years):</strong> 
-				{/* insert code here  */}
-                    	</p>
-                    	<p><strong>Description:</strong> 
-				{/* insert code here  */}
-                    	</p>
+                    
+                    {/* Task 6: Display gift details */}
+                    <p><strong>Category:</strong> {gift.category}</p>
+                    <p><strong>Condition:</strong> {gift.condition}</p>
+                    <p><strong>Date Added:</strong> {new Date(gift.date_added * 1000).toLocaleDateString() || gift.date_added}</p>
+                    <p><strong>Age (Years):</strong> {gift.age_years}</p>
+                    <p><strong>Description:</strong> {gift.description}</p>
                 </div>
             </div>
+            
             <div className="comments-section mt-4">
                 <h3 className="mb-3">Comments</h3>
-				// Task 7: Render comments section by using the map function to go through all the comments
-				{{ insert code here }} => (
-                    <div key={index} className="card mb-3">
+                {/* Task 7: Render comments section by using the map function to go through all the comments */}
+                {comments.map((comment, index) => (
+                    <div key={index} className="card mb-3 shadow-sm">
                         <div className="card-body">
-                            <p className="comment-author"><strong>{comment.author}:</strong></p>
-                            <p className="comment-text">{comment.comment}</p>
+                            <p className="comment-author mb-1"><strong>{comment.author}:</strong></p>
+                            <p className="comment-text mb-0 text-secondary">{comment.comment}</p>
                         </div>
                     </div>
                 ))}
