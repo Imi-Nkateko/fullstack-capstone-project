@@ -19,13 +19,49 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // User Registration Endpoint Container
 router.post('/register', async (req, res) => {
-    // Step 2 implementation will go here
     try {
-        // Placeholder for upcoming step execution
-        res.status(501).json({ message: "Registration logic pending implementation" });
-    } catch (error) {
-        logger.error(`Registration routing error: ${error.message}`);
-        res.status(500).json({ error: "Internal server authentication error" });
+        // Task 1: Connect to `giftsdb` in MongoDB through `connectToDatabase` in `db.js`
+        const db = await connectToDatabase();
+
+        // Task 2: Access MongoDB collection
+        const collection = db.collection("users");
+
+        // Task 3: Check for existing email
+        const existingEmail = await collection.findOne({ email: req.body.email });
+        if (existingEmail) {
+            logger.error('Email already exists');
+            return res.status(400).json({ error: 'Email already exists' });
+        }
+
+        // Hash the password securely using bcryptjs
+        const salt = await bcryptjs.genSalt(10);
+        const hash = await bcryptjs.hash(req.body.password, salt);
+        const email = req.body.email;
+
+        // Task 4: Save user details in database
+        const newUser = await collection.insertOne({
+            email: req.body.email,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            password: hash,
+            createdAt: new Date(),
+        });
+
+        // Task 5: Create JWT authentication with user._id as payload
+        const payload = {
+            user: {
+                id: newUser.insertedId,
+            },
+        };
+
+        const authtoken = jwt.sign(payload, JWT_SECRET);
+
+        logger.info('User registered successfully');
+        res.json({ authtoken, email });
+        
+    } catch (e) {
+         logger.error(`Registration error: ${e.message}`);
+         return res.status(500).send('Internal server error');
     }
 });
 
